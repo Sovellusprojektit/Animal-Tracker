@@ -2,6 +2,6 @@ FROM openjdk:latest
 
 WORKDIR /app
 
-COPY ./target/server-0.0.2-SNAPSHOT.jar /app
+COPY ./target/backend-0.0.3-SNAPSHOT.jar /app
 
-CMD ["java", "-jar", "server-0.0.2-SNAPSHOT.jar"]
+CMD ["java", "-jar", "backend-0.0.3-SNAPSHOT.jar"]

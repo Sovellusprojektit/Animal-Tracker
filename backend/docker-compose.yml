@@ -1,6 +1,25 @@
 version: '3.8'
+
 services:
-  app:
-    image: server:latest
+  database:
+    image: "mysql:5.7"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=animal_tracker
+      - MYSQL_USER=testi
+      - MYSQL_PASSWORD=testi
+      - MYSQL_ROOT_PASSWORD=testi
+    volumes:
+      - mysql_data:/var/lib/mysql
+   
+
+  server:
+    build: .
     ports:
       - "8080:8080"
+    depends_on:
+      - database
+
+volumes:
+  mysql_data:
