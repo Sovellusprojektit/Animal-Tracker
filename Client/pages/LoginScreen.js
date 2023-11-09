@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import customBackgroundImage from '../utility/images/white_theme_bg.jpg';
 
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
       <View style={styles.logInButtonContainer}>
         <TouchableOpacity
           style={styles.logIncustomButton}
-          onPress={() => navigation.navigate('Register')} //Alustava navigointi ennen kotisivua!
+          onPress={() => navigation.navigate('Homepage')} //Alustava navigointi ennen kotisivua!
         >
           <Text style={styles.frgPasswbuttonText}>Log In</Text>
         </TouchableOpacity>
