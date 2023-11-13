@@ -28,8 +28,7 @@ const CustomDrawerContent = ({ navigation }) => {
 export default function DrawerMenu() {
   return (
     <Drawer.Navigator initialRouteName="Home" drawerContent={CustomDrawerContent}>
-      <Drawer.Screen name="Home" component={HomePage} 
-   />
+      <Drawer.Screen name="Home" component={HomePage}/>
       <Drawer.Screen name="About" component={About} />
       
     </Drawer.Navigator>
