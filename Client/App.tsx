@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import {
   StyleSheet,
@@ -14,8 +15,5 @@ function App(): JSX.Element {
   </NavigationContainer>
   );
 }
-
-
-
 
 export default App;

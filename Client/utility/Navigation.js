@@ -32,7 +32,8 @@ const Navigation = () => {
           },
         }}
       />
-      <Stack.Screen
+
+<Stack.Screen
         name="Homepage"
         component={Drawer_menu}
         options={{
@@ -45,6 +46,8 @@ const Navigation = () => {
           },
         }}
       />
+  
+      
     </Stack.Navigator>
   );
 }
