@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import RegisterScreen from '../pages/RegisterScreen';
 import LoginScreen from '../pages/LoginScreen';
+import DrawerMenu from './Drawer';
 const Stack = createStackNavigator();
 
 const Navigation = () => {
@@ -31,8 +32,20 @@ const Navigation = () => {
           },
         }}
       />
-
-
+      <Stack.Screen
+        name="HomePage"
+        component={DrawerMenu}
+        options={{
+          headerTitle: '',
+          headerLeft: null,
+          headerTransparent: true,
+          headerBackground: () => null,
+          headerTitleStyle: {
+            color: 'grey',
+            fontSize: 14,
+          },
+        }}  
+      />
     </Stack.Navigator>
   );
 }
