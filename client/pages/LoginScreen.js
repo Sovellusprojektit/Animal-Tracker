@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
       <View style={styles.logInButtonContainer}>
         <TouchableOpacity
           style={styles.logIncustomButton}
-          onPress={() => navigation.navigate('Homepage')} //Alustava navigointi ennen kotisivua!
+          onPress={() => navigation.navigate('HomePage')} //Alustava navigointi ennen kotisivua!
         >
           <Text style={styles.frgPasswbuttonText}>Log In</Text>
         </TouchableOpacity>
