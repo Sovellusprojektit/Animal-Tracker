@@ -1,56 +1,62 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
-import customBackgroundImage from '../utility/images/white_theme_bg.jpg';
-
+import { useTheme } from '../utility/Theme';
 
 const LoginScreen = ({ navigation }) => {
+  const { themeColors, backgroundImages } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <ImageBackground source={customBackgroundImage} style={styles.container}>
-    <View style={styles.container}>
-      <Text style={styles.animalTrackertitleText}>Animal Tracker</Text>
-      <Text style={styles.welcometitleText}>Welcome</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.inputField}
-          placeholder="Password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
+    <ImageBackground source={backgroundImages.backgroundImage} style={styles.container}>
+      <View style={styles.container}>
+        <Text style={[styles.animalTrackertitleText, { color: themeColors.textColor }]}>
+          Animal Tracker
+        </Text>
+        <Text style={[styles.welcometitleText, { color: themeColors.textColor }]}>Welcome</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.inputField, { borderBottomColor: themeColors.textColor }]}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            placeholderTextColor={themeColors.textColor}
+          />
+          <TextInput
+            style={[styles.inputField, { borderBottomColor: themeColors.textColor }]}
+            placeholder="Password"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            placeholderTextColor={themeColors.textColor}
+          />
+        </View>
+        <View style={styles.logInButtonContainer}>
+          <TouchableOpacity
+            style={[styles.logIncustomButton, { backgroundColor: themeColors.backgroundColor }]}
+            onPress={() => navigation.navigate('HomePage')}
+          >
+            <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}>Log In</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.ButtonContainer}>
+          <TouchableOpacity
+            style={[styles.signUpcustomButton, { backgroundColor: themeColors.backgroundColor }]}
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={[styles.signUpbuttonText, { color: themeColors.textColor }]}>Sign Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.frgPasswcustomButton, { backgroundColor: themeColors.backgroundColor }]}
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.logInButtonContainer}>
-        <TouchableOpacity
-          style={styles.logIncustomButton}
-          onPress={() => navigation.navigate('HomePage')} //Alustava navigointi ennen kotisivua!
-        >
-          <Text style={styles.frgPasswbuttonText}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.ButtonContainer}>
-        <TouchableOpacity
-          style={styles.signUpcustomButton}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.signUpbuttonText}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.frgPasswcustomButton}
-          onPress={() => navigation.navigate('Register')} //Alustava navigointi ennen unohditko salasana sivua!
-        >
-          <Text style={styles.frgPasswbuttonText}>Forgot Password?</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </ImageBackground>
+    </ImageBackground>
   );
 }
 
@@ -62,13 +68,11 @@ const styles = StyleSheet.create({
   },
   animalTrackertitleText: {
     fontSize: 34,
-    color: 'black',
     fontWeight: 'bold',
     marginTop: 80,
   },
   welcometitleText: {
     fontSize: 24,
-    color: 'black',
   },
   inputContainer: {
     marginTop: 80,
@@ -86,14 +90,12 @@ const styles = StyleSheet.create({
   logIncustomButton: {
     width: 320,
     height: 45,
-    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
     marginBottom: 60,
   },
   logInbuttonText: {
-    color: 'white',
     fontSize: 20,
   },
   ButtonContainer: {
@@ -102,26 +104,22 @@ const styles = StyleSheet.create({
   signUpcustomButton: {
     width: 250,
     height: 35,
-    backgroundColor: '#2A9AFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
     marginBottom: 20,
   },
   signUpbuttonText: {
-    color: 'white',
     fontSize: 18,
   },
   frgPasswcustomButton: {
     width: 250,
     height: 35,
-    backgroundColor: '#2A9AFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
   },
   frgPasswbuttonText: {
-    color: 'white',
     fontSize: 18,
   },
 });
