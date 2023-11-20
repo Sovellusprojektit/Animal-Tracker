@@ -44,6 +44,8 @@ const LoginScreen = ({ navigation }) => {
             value={email}
             onChangeText={(text) => setEmail(text)}
             placeholderTextColor={themeColors.textColor}
+            color={themeColors.textColor}
+
           />
           <TextInput
             style={[styles.inputField, { borderBottomColor: themeColors.textColor }]}
@@ -52,6 +54,8 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             onChangeText={(text) => setPassword(text)}
             placeholderTextColor={themeColors.textColor}
+            color={themeColors.textColor}
+
           />
         </View>
         <View style={styles.logInButtonContainer}>
