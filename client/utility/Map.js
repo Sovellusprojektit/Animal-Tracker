@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
@@ -24,13 +24,11 @@ const Map = () => {
             centerCoordinate={[24.945831, 60.192059]}
             animationMode={'flyTo'}
             animationDuration={0}
-
           />
             <Mapbox.PointAnnotation
               id="marker"
               coordinate={[24.945831, 60.192059]}
               title="Test"/>
- 
         </Mapbox.MapView>
       </View>
     </View>
