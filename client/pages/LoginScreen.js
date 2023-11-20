@@ -1,11 +1,34 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { useTheme } from '../utility/Theme';
+import { handleLogin } from '../utility/Auth';
+import { CommonActions } from '@react-navigation/native';
 
 const LoginScreen = ({ navigation }) => {
   const { themeColors, backgroundImages } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+
+
+  const handleLoginAndNavigate = async () => {
+    try {
+      const loginSuccess = await handleLogin(email, password);
+  
+      if (loginSuccess) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'HomePage' }],
+          })
+        );
+      } else {
+        console.log('Login unsuccessful');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  };
 
   return (
     <ImageBackground source={backgroundImages.backgroundImage} style={styles.container}>
@@ -34,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.logInButtonContainer}>
           <TouchableOpacity
             style={[styles.logIncustomButton, { backgroundColor: themeColors.backgroundColor }]}
-            onPress={() => navigation.navigate('HomePage')}
+            onPress={handleLoginAndNavigate}
           >
             <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}>Log In</Text>
           </TouchableOpacity>
