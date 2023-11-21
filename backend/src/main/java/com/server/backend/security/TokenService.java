@@ -1,16 +1,14 @@
 package com.server.backend.security;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Function;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +17,12 @@ import io.jsonwebtoken.Jwts;
 
 @Service
 public class TokenService {
+    
+    private final String secretKey;
+
+     public TokenService(@Value("${SECRET_KEY}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
    
 
@@ -71,34 +75,16 @@ public class TokenService {
     }
 
     
-    //Get secret key from .env file
-    private Key getSignKey() {
-    Properties prop = new Properties();
-    InputStream input = null;
-    String secretKey = null;
-
-    try {
-        input = new FileInputStream(".env");
-        prop.load(input);
-        secretKey = prop.getProperty("SECRET_KEY");
-    } catch (java.io.IOException ex) {
-        ex.printStackTrace();
-    } finally {
-        if (input != null) {
-            try {
-                input.close();
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
+    
+   private Key getSignKey() {
+        if (secretKey == null || secretKey.isEmpty()) {
+            throw new RuntimeException("Secret key not found in environment variable");
         }
-    }
 
-    if (secretKey == null) {
-        throw new RuntimeException("Secret key not found in .env file");
-    }
+        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
 
-    return new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-}
+        return new SecretKeySpec(decodedKey, "HmacSHA256");
+    }
 
     
 }

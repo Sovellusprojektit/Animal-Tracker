@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,6 @@ import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 import com.server.backend.service.UserService;
 
-
-
-
 @CrossOrigin
 @RestController
 public class DataController {
@@ -31,14 +29,25 @@ public class DataController {
     @Autowired
     private UserRepo userRepo;
 
-
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/adduser")
-    public User addUser(@RequestParam String fname, @RequestParam String lname ,@RequestParam String email, @RequestParam String password) {
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<User> getUserInfo(Authentication authentication) {
+
+        String userEmail = authentication.getName();
+    
+        Optional<User> optionalUser = userService.getUserByEmail(userEmail);
+
+        return optionalUser.map(user -> ResponseEntity.ok().body(user))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/addUser")
+    public User addUser(@RequestParam String fname, @RequestParam String lname, @RequestParam String email,
+            @RequestParam String password) {
         User user = new User();
         user.setFname(fname);
         user.setLname(lname);
@@ -46,19 +55,19 @@ public class DataController {
         user.setPassword(password);
 
         return userRepo.save(user);
-        
+
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         Optional<User> user = userRepo.findById(id);
 
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             userRepo.deleteById(id);
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
     }
-    
+
 }

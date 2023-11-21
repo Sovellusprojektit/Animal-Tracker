@@ -3,6 +3,7 @@ package com.server.backend.service;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
     
