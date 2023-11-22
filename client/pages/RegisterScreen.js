@@ -30,7 +30,7 @@ const RegisterScreen = ({ navigation }) => {
         };
         const response = await axios.post(`http://${IP_ADDRESS}:8080/auth/signUp`, data, {
           headers: {
-            'Content-Type': 'application/json', // Varmista, että lähetät JSON-dataa
+            'content-type': 'application/json', // Varmista, että lähetät JSON-dataa
           },
         });
   

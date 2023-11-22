@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, ImageBackground, TouchableOpacity, Text, M
 import { useState } from 'react';
 import { useTheme } from '../utility/Theme';
 
-const AccountInfo = () => {
+const AccountInfo = ({ navigation }) => {
     const { themeColors, backgroundImages } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -42,7 +42,7 @@ const AccountInfo = () => {
                         onPress={handleButtonPress}
                     >
                         <Text style={[{ color: themeColors.textColor }]}>
-                            Change password?
+                            Change password
                         </Text>
                     </TouchableOpacity>
 
@@ -51,6 +51,16 @@ const AccountInfo = () => {
                     >
                         <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}>
                             Update values
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.buttonstyleGoBack, { backgroundColor: themeColors.backgroundColor }]}
+                    >
+                        <Text
+                            style={[{ color: themeColors.textColor }]}
+                            onPress={() => navigation.navigate('Home')}
+                            >
+                            Go back
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -77,11 +87,21 @@ const AccountInfo = () => {
                         color={themeColors.textColor}
                         secureTextEntry={true}
                     />
-
                     <TouchableOpacity
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
                         onPress={handleCloseModal}>
-                        <Text>Save</Text>
+                        <Text
+                            style={[{ color: themeColors.textColor }]}>
+                            Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.buttonstyleGoBack, { backgroundColor: themeColors.backgroundColor }]}
+                    >
+                        <Text
+                            style={[{ color: themeColors.textColor }]}
+                            onPress={handleCloseModal}>
+                            Go back
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </Modal>
@@ -110,9 +130,16 @@ const styles = StyleSheet.create({
         width: 150,
         alignItems: 'center',
     },
+    buttonstyleGoBack: {
+        marginTop: 10,
+        padding: 10,
+        borderRadius: 8,
+        width: 100,
+        alignItems: 'center',
+    },
     modalContainer: {
         width: '80%',
-        height: '50%', 
+        height: '50%',
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
