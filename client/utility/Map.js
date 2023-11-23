@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
 import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
@@ -12,6 +12,7 @@ const Map = () => {
   const { themeColors } = useTheme();
   const [animalLocation, setAnimalLocation] = useState([24.945831, 60.192059]);
   const [markerVisible, setMarkerVisible] = useState(true);
+  const [isPopupVisible, setPopupVisibility] = useState(false);
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -25,6 +26,14 @@ const Map = () => {
         console.error("Error while getting location: " + error);
       }
     }
+  };
+
+  const togglePopup = () => {
+    setPopupVisibility(!isPopupVisible);
+  };
+
+  const handleCloseModal = () => {
+    setPopupVisibility(false);
   };
 
   useEffect(() => {
@@ -49,7 +58,7 @@ const Map = () => {
       <View style={styles.container}>
         <Mapbox.MapView
           style={styles.map}
-          styleURL={`https://avoin-karttakuva.maanmittauslaitos.fi/vectortiles/stylejson/v20/generic.json?TileMatrixSet=WGS84_Pseudo-Mercator&api-key=${MAANMITTAUSLAITOS_API_KEY}`}
+          styleURL={`https://avoin-karttakuva.maanmittauslaitos.fi/vectortiles/stylejson/v20/generic.json?api-key=${MAANMITTAUSLAITOS_API_KEY}`}
           centerCoordinate={[25.527834, 65.003387]}
           zoomLevel={6}
           showUserLocation={true}
@@ -69,15 +78,48 @@ const Map = () => {
             />
           )}
         </Mapbox.MapView>
-
         <TouchableOpacity
-          style={[styles.toggleButton, { backgroundColor: themeColors.backgroundColor }]}
+          style={styles.toggleButton}
           onPress={toggleMarkerVisibility}
         >
-          <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
+          <Text style={[styles.buttonTextForMarker, { color: themeColors.textColor }]}>
             {markerVisible ? 'Hide Marker' : 'Show Marker'}
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.infoButton}
+          onPress={togglePopup}
+        >
+          <Text style={[styles.buttonTextForMarker, { color: themeColors.textColor }]}>
+            Info
+          </Text>
+        </TouchableOpacity>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isPopupVisible}
+          onRequestClose={() => setPopupVisibility(false)}
+        >
+          <View style={styles.popup}>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+              Update Delay
+              </Text>
+              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+              Ring the Bell
+              </Text>
+              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+              Turn on the Light
+              </Text>
+              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}>
+              Turn on Live
+              </Text>
+                <Text
+                  style={[styles.buttonTextForCloseModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
+                  onPress={handleCloseModal}>
+                  Close
+                </Text>
+          </View>
+        </Modal>
       </View>
     </View>
   );
@@ -90,9 +132,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    height: 1445,
+    height: 1500,
     width: 400,
-    position: 'relative',
   },
   map: {
     flex: 1,
@@ -103,9 +144,41 @@ const styles = StyleSheet.create({
     right: 16,
     padding: 10,
     borderRadius: 8,
+    backgroundColor: '#858585',
   },
-  buttonText: {
+  buttonTextForMarker: {
     fontWeight: 'bold',
+  },
+  buttonTextForModal: {
+    fontWeight: 'bold',
+    top: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    padding: 3,
+  },
+  buttonTextForCloseModal: {
+    fontWeight: 'bold',
+    top: 28,
+    borderRadius: 5,
+    borderWidth: 1,
+    padding: 3,
+  },
+  infoButton: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#858585',
+  },
+  popup: {
+    alignItems: 'center',
+    margin: 13,
+    borderRadius: 10,
+    width: 150,
+    height: 200,
+    marginTop: 548,
+    backgroundColor: '#858585',
   },
 });
 
