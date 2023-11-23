@@ -3,6 +3,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import HomePage from '../pages/HomePage';
 import Settings from '../pages/Settings';
 import AccountInfo from '../pages/AccountInfo';
+import History from '../pages/History';
 import { useTheme } from '../utility/Theme';
 
 const Drawer = createDrawerNavigator();
@@ -24,6 +25,11 @@ const CustomDrawerContent = ({ navigation }) => {
       <DrawerItem
         label="Settings"
         onPress={() => navigation.navigate('Settings')}
+        labelStyle={{ color: themeColors.textColor }}
+      />
+      <DrawerItem
+        label="History"
+        onPress={() => navigation.navigate('History')}
         labelStyle={{ color: themeColors.textColor }}
       />
       <DrawerItem
@@ -61,6 +67,7 @@ export default function DrawerMenu() {
     >
       <Drawer.Screen name="Home" component={HomePage} />
       <Drawer.Screen name="Settings" component={Settings} />
+      <Drawer.Screen name="History" component={History} />
       <Drawer.Screen name="Account Info" component={AccountInfo} />
     </Drawer.Navigator>
   );

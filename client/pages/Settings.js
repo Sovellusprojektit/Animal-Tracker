@@ -4,7 +4,7 @@ import lightBackgroundImage from '../utility/images/white_theme_bg.jpg';
 import darkBackgroundImage from '../utility/images/dark_theme_bg.jpg';
 import { useTheme } from '../utility/Theme';
 
-const SettingsPage = () => {
+const SettingsPage = ({ navigation }) => {
   const { isDarkMode, toggleDarkMode, themeColors } = useTheme();
 
   const getButtonStyle = () => {
@@ -41,9 +41,22 @@ const SettingsPage = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.changePasswordButton, getButtonStyle()]}
+          style={[styles.ChangePetToggle, getButtonStyle()]}
         >
-          <Text style={[styles.changePasswordButtonText, getButtonTextStyle()]}>Change Password</Text>
+          <Text style={[styles.changePetNameButtonText, getButtonTextStyle()]}
+            //onPress={() => 
+          >
+            Change pet name
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.goBackButton, getButtonStyle()]}
+        >
+          <Text style={[styles.goBackButtonText, getButtonTextStyle()]}
+            onPress={() => navigation.navigate('Home')}
+          >
+            Go back
+          </Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -65,12 +78,20 @@ const styles = StyleSheet.create({
   darkModeToggleText: {
     fontSize: 16,
   },
-  changePasswordButton: {
+  goBackButton: {
+    marginTop: 550,
+    padding: 10,
+    borderRadius: 8,
+  },
+  goBackButtonText: {
+    fontSize: 16,
+  },
+  ChangePetToggle: {
     marginTop: 10,
     padding: 10,
     borderRadius: 8,
   },
-  changePasswordButtonText: {
+  changePetNameButtonText: {
     fontSize: 16,
   },
 });
