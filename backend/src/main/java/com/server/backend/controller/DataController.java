@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.server.backend.config.UpdatePasswordRequest;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 import com.server.backend.service.UserService;
@@ -67,6 +70,18 @@ public class DataController {
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/user/password")
+    public ResponseEntity<String> updatePassword(Authentication authentication, @RequestBody UpdatePasswordRequest request) {
+        String userEmail = authentication.getName();
+        boolean passwordUpdated = userService.updatePassword(userEmail, request);
+
+        if (passwordUpdated) {
+            return ResponseEntity.ok().body("Password updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating password");
         }
     }
 
