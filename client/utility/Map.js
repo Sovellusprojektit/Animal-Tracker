@@ -5,6 +5,8 @@ import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { MAANMITTAUSLAITOS_API_KEY } from '@env';
 import { connectTracker, getAnimalLocation } from './Tracker';
+import { UserLocation } from '@rnmapbox/maps';
+import { request, PERMISSIONS } from 'react-native-permissions';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -13,6 +15,7 @@ const Map = () => {
   const [animalLocation, setAnimalLocation] = useState([24.945831, 60.192059]);
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -35,6 +38,27 @@ const Map = () => {
   const handleCloseModal = () => {
     setPopupVisibility(false);
   };
+
+  useEffect(() => {
+
+    request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+      .then((result) => {
+        if (result === 'granted') {
+          console.log('Location permission granted');
+        } else {
+          console.log('Location permission denied');
+        }
+      })
+      .catch((error) => {
+        console.error('Error requesting location permission:', error);
+      });
+  }, []);
+
+  const handleLocationUpdate = (location) => {
+    setUserLocation(location);
+  };
+
+
 
   useEffect(() => {
     const initializeMap = async () => {
@@ -64,12 +88,6 @@ const Map = () => {
           showUserLocation={true}
           logoEnabled={false}
         >
-          <Mapbox.Camera
-            zoomLevel={6}
-            centerCoordinate={[25.527834, 65.003387]}
-            animationMode={'flyTo'}
-            animationDuration={0}
-          />
           {markerVisible && (
             <Mapbox.PointAnnotation
               id="marker"
@@ -77,6 +95,15 @@ const Map = () => {
               title="Test"
             />
           )}
+          {userLocation && (
+            <Mapbox.Camera
+              centerCoordinate={[userLocation.coords.longitude, userLocation.coords.latitude]}
+              zoomLevel={15}  
+              animationMode={'flyTo'}
+              animationDuration={0}        
+            />
+          )}
+           <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate}  />
         </Mapbox.MapView>
         <TouchableOpacity
           style={styles.toggleButton}

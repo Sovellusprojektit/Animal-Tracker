@@ -1,12 +1,51 @@
-import React from 'react';
-import { View, StyleSheet, TextInput, ImageBackground, TouchableOpacity, Text, Modal } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, TextInput, ImageBackground, TouchableOpacity, Text, Modal, Alert } from 'react-native';
 import { useState } from 'react';
 import { useTheme } from '../utility/Theme';
+import { getAccessToken } from '../utility/Auth';
+import axios from 'axios';
+import { IP_ADDRESS } from '@env';
 
 const AccountInfo = ({ navigation }) => {
     const { themeColors, backgroundImages } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
 
+    const [userDetails, setUserDetails] = useState({
+                fname: '',
+                lname: '',
+                email: '',
+            });
+
+            useEffect(() => {
+                const getUserDetails = async () => {
+                  try {
+                    const token = await getAccessToken();
+                    if (token) {
+                      const response = await axios.get(`http://${IP_ADDRESS}:8080/getUserInfo`, {
+                        headers: {
+                          'content-type': 'application/json',
+                          'Accept': 'application/json',
+                          'Authorization': `Bearer ${token}`,
+                        },
+                      });
+              
+                      if (response.status === 200) {
+                        const { fname, lname, email } = response.data;
+                        setUserDetails({ fname, lname, email });
+                      } else {
+                        console.log('Error:', response);
+                        Alert.alert('Error receiving user details');
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error:', error);
+                    Alert.alert('Error receiving user details');
+                  }
+                };
+              
+                getUserDetails();
+              }, []);
+        
     const handleButtonPress = () => {
         setModalVisible(true);
     };
@@ -24,18 +63,24 @@ const AccountInfo = ({ navigation }) => {
                         placeholder="First name"
                         placeholderTextColor={themeColors.textColor}
                         color={themeColors.textColor}
+                        value={userDetails.fname}
+                        onChangeText={(text) => setUserDetails({ ...userDetails, fname: text })}
                     />
                     <TextInput
                         style={[styles.textinput, { borderColor: themeColors.textColor }]}
                         placeholder="Last name"
                         placeholderTextColor={themeColors.textColor}
                         color={themeColors.textColor}
+                        value={userDetails.lname}
+                        onChangeText={(text) => setUserDetails({ ...userDetails, lname: text })}
                     />
                     <TextInput
                         style={[styles.textinput, { borderColor: themeColors.textColor }]}
                         placeholder="Email"
                         placeholderTextColor={themeColors.textColor}
                         color={themeColors.textColor}
+                        value={userDetails.email}
+                        onChangeText={(text) => setUserDetails({ ...userDetails, email: text })}
                     />
                     <TouchableOpacity
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
@@ -49,7 +94,9 @@ const AccountInfo = ({ navigation }) => {
                     <TouchableOpacity
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
                     >
-                        <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}>
+                        <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}
+                        //onPress={getUserDetails}
+                        >
                             Update values
                         </Text>
                     </TouchableOpacity>
