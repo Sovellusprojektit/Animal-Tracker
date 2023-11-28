@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.server.backend.config.UpdatePasswordRequest;
+import com.server.backend.config.UserUpdate;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 
@@ -47,6 +48,22 @@ public class UserService {
     }
 }
 
+public boolean updateUser(String userEmail, UserUpdate userUpdate) {
 
+        Optional<User> optionalUser = userRepo.findByEmail(userEmail);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setFname(userUpdate.getFname());
+            user.setLname(userUpdate.getLname());
+            user.setEmail(userEmail);
+            userRepo.save(user);
+            return true;
+        } else {
+
+            System.out.println("User not found with email: " + userEmail);
+            return false;
+        }
+    }
 
 }

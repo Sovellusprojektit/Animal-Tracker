@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.config.UpdatePasswordRequest;
+import com.server.backend.config.UserUpdate;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 import com.server.backend.service.UserService;
@@ -84,5 +85,22 @@ public class DataController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating password");
         }
     }
+
+    @PutMapping("/updateUser")
+    public ResponseEntity<String> updateUser(Authentication authentication, @RequestBody UserUpdate userUpdate) {
+    try {
+        String userEmail = authentication.getName();
+        boolean isUpdated = userService.updateUser(userEmail, userUpdate);
+
+        if (isUpdated) {
+            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>("Error updating user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 
 }

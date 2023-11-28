@@ -9,7 +9,7 @@ import { useTheme } from '../utility/Theme';
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ navigation }) => {
-  const { isDarkMode, themeColors } = useTheme();
+  const { themeColors } = useTheme();
 
   const drawerBackgroundColor = {
     backgroundColor: themeColors.backgroundColor,
