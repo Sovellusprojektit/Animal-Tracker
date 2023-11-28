@@ -7,9 +7,6 @@ const History = ({ navigation }) => {
     const { themeColors, backgroundImages } = useTheme();
 
 
-
-
-
     return (
         <View style={styles.container}>
             <Text style={styles.text}>History</Text>

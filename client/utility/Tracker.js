@@ -1,5 +1,5 @@
 import {TRACTIVE_EMAIL, TRACTIVE_PASSWORD, TRACKER_ID } from '@env';
-import {connect, isAuthenticated, getTrackerLocation} from 'tractive';
+import {connect, isAuthenticated, getTrackerLocation, liveOn, liveOff, getTrackerHistory} from 'tractive';
 
 
 export const connectTracker = async () => {
@@ -28,6 +28,27 @@ export const getAnimalLocation = async () => {
     console.error("Error while getting location: " + error);
   }
 }
+
+export const liveTrackingOn = async () => {
+  try {
+    const live = await liveOn(TRACKER_ID.toString());
+    console.log(live);
+    return live;
+  } catch (error) {
+    console.error("Error while turning live tracking on: " + error);
+  }
+};
+
+export const getHistory = async () => {
+  try {
+    const history = await getTrackerHistory(TRACKER_ID.toString(), new Date('2021-12-01T00:00:00'), new Date('2023-12-12T00:00:00'));
+    return history;
+  } catch (error) {
+    console.error("Error while getting history: " + error);
+  }
+}
+
+
 
 
 

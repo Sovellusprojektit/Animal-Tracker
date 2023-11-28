@@ -95,7 +95,6 @@ const AccountInfo = ({ navigation }) => {
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
                     >
                         <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}
-                        //onPress={getUserDetails}
                         >
                             Update values
                         </Text>
