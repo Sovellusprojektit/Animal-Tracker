@@ -7,6 +7,7 @@ import { MAANMITTAUSLAITOS_API_KEY } from '@env';
 import { connectTracker, getAnimalLocation } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
+import { Coordinates } from './MapData';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -16,6 +17,7 @@ const Map = () => {
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [lineCoordinates, setLineCoordinates] = useState([]);
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -58,12 +60,10 @@ const Map = () => {
     setUserLocation(location);
   };
 
-
-
   useEffect(() => {
     const initializeMap = async () => {
       const isConnected = await connectTracker();
-      
+
       if (isConnected) {
         try {
           const location = await getAnimalLocation();
@@ -76,6 +76,12 @@ const Map = () => {
 
     initializeMap();
   }, []);
+
+  
+useEffect(() => {
+  // Update lineCoordinates whenever animalLocation changes
+  setLineCoordinates(Coordinates());
+}, [animalLocation]);
 
   return (
     <View style={styles.page}>
@@ -95,15 +101,24 @@ const Map = () => {
               title="Test"
             />
           )}
+          <Mapbox.ShapeSource id="lineSource" shape={{ type: 'LineString', coordinates: lineCoordinates }}>
+            <Mapbox.LineLayer
+              id="lineLayer"
+              style={{
+                lineColor: 'red',
+                lineWidth: 2,
+              }}
+            />
+          </Mapbox.ShapeSource>
           {userLocation && (
             <Mapbox.Camera
               centerCoordinate={[userLocation.coords.longitude, userLocation.coords.latitude]}
-              zoomLevel={15}  
+              zoomLevel={15}
               animationMode={'flyTo'}
-              animationDuration={0}        
+              animationDuration={0}
             />
           )}
-           <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate}  />
+          <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate} />
         </Mapbox.MapView>
         <TouchableOpacity
           style={styles.toggleButton}
@@ -128,23 +143,23 @@ const Map = () => {
           onRequestClose={() => setPopupVisibility(false)}
         >
           <View style={styles.popup}>
-            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
               Update Delay
-              </Text>
-              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+            </Text>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
               Ring the Bell
-              </Text>
-              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor}]}>
+            </Text>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
               Turn on the Light
-              </Text>
-              <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}>
+            </Text>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}>
               Turn on Live
-              </Text>
-                <Text
-                  style={[styles.buttonTextForCloseModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
-                  onPress={handleCloseModal}>
-                  Close
-                </Text>
+            </Text>
+            <Text
+              style={[styles.buttonTextForCloseModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
+              onPress={handleCloseModal}>
+              Close
+            </Text>
           </View>
         </Modal>
       </View>
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    height: 1500,
+    height: 1350,
     width: 400,
   },
   map: {
