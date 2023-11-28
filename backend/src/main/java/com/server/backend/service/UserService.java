@@ -13,13 +13,16 @@ import com.server.backend.config.UserUpdate;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 
+import lombok.RequiredArgsConstructor;
+
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     
     @Autowired
-    private UserRepo userRepo;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
