@@ -12,7 +12,6 @@ services:
       - MYSQL_ROOT_PASSWORD=testi
     volumes:
       - mysql_data:/var/lib/mysql
-   
 
   server:
     build: .
@@ -22,9 +21,10 @@ services:
       - database
     env_file:
       - .env
-
-
-
+    volumes:
+      - ./src:/app/src       
+      - ./target:/app/target
 
 volumes:
   mysql_data:
+
