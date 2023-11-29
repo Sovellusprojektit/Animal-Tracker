@@ -9,6 +9,7 @@ import { IP_ADDRESS } from '@env';
 const AccountInfo = ({ navigation }) => {
     const { themeColors, backgroundImages } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
+    const [updateValuesModalVisible, setUpdateValuesModalVisible] = useState(false);
 
     const [userDetails, setUserDetails] = useState({
                 fname: '',
@@ -18,6 +19,7 @@ const AccountInfo = ({ navigation }) => {
 
             useEffect(() => {
                 const getUserDetails = async () => {
+                    
                   try {
                     const token = await getAccessToken();
                     if (token) {
@@ -45,7 +47,36 @@ const AccountInfo = ({ navigation }) => {
               
                 getUserDetails();
               }, []);
-        
+
+
+              const changeValues = async () => {
+
+                try {
+                    const token = await getAccessToken();
+                    const response = await axios.put(`http://${IP_ADDRESS}:8080/updateUser`, {
+                        fname: userDetails.fname,
+                        lname: userDetails.lname,
+                    }, {
+                        headers: {
+                            'content-type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+            
+                    if (response.status === 200) {
+                        console.log('Response:', response.data);
+                        handleCloseUpdateValuesModal();
+                    } else {
+                        Alert.alert('Error updating user details');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    console.log('Error:', response.data);
+                    Alert.alert('Error updating user details');
+                }
+            };
+
     const handleButtonPress = () => {
         setModalVisible(true);
     };
@@ -54,11 +85,20 @@ const AccountInfo = ({ navigation }) => {
         setModalVisible(false);
     };
 
+    const handleUpdateValuesPress = () => {
+        setUpdateValuesModalVisible(true);
+    };
+
+    const handleCloseUpdateValuesModal = () => {
+        setUpdateValuesModalVisible(false);
+    };
+
     return (
         <ImageBackground source={backgroundImages.backgroundImage} style={styles.container}>
-            {modalVisible ? null : (
+             {modalVisible || updateValuesModalVisible ? null : (
                 <View style={[styles.container, { color: themeColors.textColor }]} >
                     <TextInput
+
                         style={[styles.textinput, { borderColor: themeColors.textColor }]}
                         placeholder="First name"
                         placeholderTextColor={themeColors.textColor}
@@ -93,10 +133,11 @@ const AccountInfo = ({ navigation }) => {
 
                     <TouchableOpacity
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
+                        onPress={handleUpdateValuesPress}
                     >
                         <Text style={[styles.frgPasswbuttonText, { color: themeColors.textColor }]}
                         >
-                            Update values
+                        Update values
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -151,6 +192,57 @@ const AccountInfo = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={updateValuesModalVisible}
+                onRequestClose={handleCloseUpdateValuesModal}
+            >
+                <View style={[styles.modalContainer, { color: themeColors.textColor }]} >
+                <Text
+                            style={[{ color: themeColors.textColor }, styles.textmodal]}>
+                            First name
+                        </Text>
+                <TextInput
+                        style={[styles.textinput, { borderColor: themeColors.textColor }]}
+                        placeholder="fname"
+                        placeholderTextColor={themeColors.textColor}
+                        color={themeColors.textColor}
+                        value={userDetails.fname}
+                        onChangeText={(text) => setUserDetails({ ...userDetails, fname: text })}
+                        
+                    />
+                <Text
+                            style={[{ color: themeColors.textColor }, styles.textmodal]}>
+                            Last name
+                        </Text>
+                    <TextInput
+                        style={[styles.textinput, { borderColor: themeColors.textColor }]}
+                        placeholder="lname"
+                        placeholderTextColor={themeColors.textColor}
+                        color={themeColors.textColor}
+                        value={userDetails.lname}
+                        onChangeText={(text) => setUserDetails({ ...userDetails, lname: text })}
+                       
+                    />
+                    <TouchableOpacity
+                        style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
+                        onPress={changeValues}>
+                        <Text
+                            style={[{ color: themeColors.textColor }]}>
+                            Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.buttonstyleGoBack, { backgroundColor: themeColors.backgroundColor }]}
+                    >
+                        <Text
+                            style={[{ color: themeColors.textColor }]}
+                            onPress={handleCloseUpdateValuesModal}>
+                            Go back
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </ImageBackground>
     );
 }
@@ -160,6 +252,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingTop:'10%'
     },
     textinput: {
         height: 40,
@@ -189,8 +282,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        marginTop: 160,
+        marginTop: 210,
         borderRadius: 10,
+    },
+    textmodal: {
+        fontSize: 15,
+        alignSelf: 'flex-start',
+        paddingLeft:10
     },
 });
 

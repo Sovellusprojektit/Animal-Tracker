@@ -7,7 +7,7 @@ import { MAANMITTAUSLAITOS_API_KEY } from '@env';
 import { connectTracker, getAnimalLocation } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
-import { Coordinates } from './MapData';
+
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -17,7 +17,6 @@ const Map = () => {
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
-  const [lineCoordinates, setLineCoordinates] = useState([]);
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -78,10 +77,6 @@ const Map = () => {
   }, []);
 
   
-useEffect(() => {
-  // Update lineCoordinates whenever animalLocation changes
-  setLineCoordinates(Coordinates());
-}, [animalLocation]);
 
   return (
     <View style={styles.page}>
@@ -101,15 +96,6 @@ useEffect(() => {
               title="Test"
             />
           )}
-          <Mapbox.ShapeSource id="lineSource" shape={{ type: 'LineString', coordinates: lineCoordinates }}>
-            <Mapbox.LineLayer
-              id="lineLayer"
-              style={{
-                lineColor: 'red',
-                lineWidth: 2,
-              }}
-            />
-          </Mapbox.ShapeSource>
           {userLocation && (
             <Mapbox.Camera
               centerCoordinate={[userLocation.coords.longitude, userLocation.coords.latitude]}

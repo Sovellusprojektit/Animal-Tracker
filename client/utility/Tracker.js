@@ -39,6 +39,16 @@ export const liveTrackingOn = async () => {
   }
 };
 
+export const liveTrackingOff = async () => {
+  try {
+    const live = await liveOff(TRACKER_ID.toString());
+    console.log(live);
+    return live;
+  } catch (error) {
+    console.error("Error while turning live tracking off: " + error);
+  }
+};
+
 export const getHistory = async () => {
   try {
     const history = await getTrackerHistory(TRACKER_ID.toString(), new Date('2021-12-01T00:00:00'), new Date('2023-12-12T00:00:00'));
