@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.config.UpdatePasswordRequest;
-import com.server.backend.config.UserUpdate;
+import com.server.backend.config.UserUpdateRequest;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 import com.server.backend.service.UserService;
@@ -87,7 +87,7 @@ public class DataController {
     }
 
     @PutMapping("/updateUser")
-    public ResponseEntity<String> updateUser(Authentication authentication, @RequestBody UserUpdate userUpdate) {
+    public ResponseEntity<String> updateUser(Authentication authentication, @RequestBody UserUpdateRequest userUpdate) {
     try {
         String userEmail = authentication.getName();
         boolean isUpdated = userService.updateUser(userEmail, userUpdate);

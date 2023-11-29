@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserUpdate {
+public class UserUpdateRequest {
     
     private String fname;
     private String lname;
-    private String email;
-
+    
 }

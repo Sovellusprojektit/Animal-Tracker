@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.server.backend.config.UpdatePasswordRequest;
-import com.server.backend.config.UserUpdate;
+import com.server.backend.config.UserUpdateRequest;
 import com.server.backend.data.User;
 import com.server.backend.repository.UserRepo;
 
@@ -51,7 +51,7 @@ public class UserService {
     }
 }
 
-public boolean updateUser(String userEmail, UserUpdate userUpdate) {
+public boolean updateUser(String userEmail, UserUpdateRequest userUpdate) {
 
         Optional<User> optionalUser = userRepo.findByEmail(userEmail);
 
