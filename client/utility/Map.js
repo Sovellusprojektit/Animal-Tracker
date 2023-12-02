@@ -4,10 +4,9 @@ import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { MAANMITTAUSLAITOS_API_KEY } from '@env';
-import { connectTracker, getAnimalLocation } from './Tracker';
+import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
-
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -17,6 +16,7 @@ const Map = () => {
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [liveTracking, setLiveTracking] = useState(false);
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -40,8 +40,16 @@ const Map = () => {
     setPopupVisibility(false);
   };
 
-  useEffect(() => {
+  const handleToggleLiveTracking = () => {
+    if (liveTracking) {
+      liveTrackingOff(); 
+    } else {
+      liveTrackingOn(); 
+    }
+    setLiveTracking(!liveTracking);
+  };
 
+  useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
       .then((result) => {
         if (result === 'granted') {
@@ -75,8 +83,6 @@ const Map = () => {
 
     initializeMap();
   }, []);
-
-  
 
   return (
     <View style={styles.page}>
@@ -126,10 +132,11 @@ const Map = () => {
           animationType="slide"
           transparent={true}
           visible={isPopupVisible}
-          onRequestClose={() => setPopupVisibility(false)}
+          onRequestClose={handleCloseModal}
         >
           <View style={styles.popup}>
-            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
+            onPress={getHistory}>
               Update Delay
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
@@ -138,8 +145,10 @@ const Map = () => {
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
               Turn on the Light
             </Text>
-            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}>
-              Turn on Live
+            <Text
+              style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
+              onPress={handleToggleLiveTracking}>
+              {liveTracking ? 'Turn off Live' : 'Turn on Live'}
             </Text>
             <Text
               style={[styles.buttonTextForCloseModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
