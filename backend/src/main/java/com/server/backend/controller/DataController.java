@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.config.UpdatePasswordRequest;
 import com.server.backend.config.UserUpdateRequest;
 import com.server.backend.data.User;
+import com.server.backend.data.UserDto;
 import com.server.backend.repository.UserRepo;
 import com.server.backend.service.UserService;
 
@@ -39,15 +40,24 @@ public class DataController {
     }
 
     @GetMapping("/getUserInfo")
-    public ResponseEntity<User> getUserInfo(Authentication authentication) {
-
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
         String userEmail = authentication.getName();
-    
         Optional<User> optionalUser = userService.getUserByEmail(userEmail);
 
-        return optionalUser.map(user -> ResponseEntity.ok().body(user))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            UserDto userDto = convertToDto(user);
+            return ResponseEntity.ok(userDto);
+        }
+
+        return ResponseEntity.notFound().build();
     }
+    
+    private UserDto convertToDto(User user) {
+        return new UserDto(user.getUid(), user.getFname(), user.getLname(), user.getEmail(), user.getRole());
+    }
+
+
 
     @PostMapping("/addUser")
     public User addUser(@RequestParam String fname, @RequestParam String lname, @RequestParam String email,
