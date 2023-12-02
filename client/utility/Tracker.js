@@ -32,6 +32,7 @@ export const getAnimalLocation = async () => {
 export const liveTrackingOn = async () => {
   try {
     const live = await liveOn(TRACKER_ID.toString());
+    console.log("Live tracking on: ");
     console.log(live);
     return live;
   } catch (error) {
@@ -42,6 +43,7 @@ export const liveTrackingOn = async () => {
 export const liveTrackingOff = async () => {
   try {
     const live = await liveOff(TRACKER_ID.toString());
+    console.log("Live tracking off: ");
     console.log(live);
     return live;
   } catch (error) {
@@ -49,15 +51,17 @@ export const liveTrackingOff = async () => {
   }
 };
 
-export const getHistory = async () => {
+export const getHistory = async (startDate, endDate) => {
   try {
-    const history = await getTrackerHistory(TRACKER_ID.toString(), new Date('2021-12-01T00:00:00'), new Date('2023-12-12T00:00:00'));
+    const history = await getTrackerHistory(TRACKER_ID.toString(), startDate, endDate);
+    console.log("History: ");
+    console.log(history);
     return history;
   } catch (error) {
     console.error("Error while getting history: " + error);
+    throw error; 
   }
 }
-
 
 
 
