@@ -10,20 +10,22 @@ import { request, PERMISSIONS } from 'react-native-permissions';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
-const Map = () => {
+const Map = ({ route }) => {
   const { themeColors } = useTheme();
   const [animalLocation, setAnimalLocation] = useState([24.945831, 60.192059]);
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [liveTracking, setLiveTracking] = useState(false);
-
+  
+  const latLongValues = route?.params?.coordinates || null;
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
       setMarkerVisible(false);
     } else {
       setMarkerVisible(true);
       try {
+
         const location = await getAnimalLocation();
         setAnimalLocation([location[1], location[0]]);
       } catch (error) {
@@ -42,9 +44,9 @@ const Map = () => {
 
   const handleToggleLiveTracking = () => {
     if (liveTracking) {
-      liveTrackingOff(); 
+      liveTrackingOff();
     } else {
-      liveTrackingOn(); 
+      liveTrackingOn();
     }
     setLiveTracking(!liveTracking);
   };
@@ -111,6 +113,18 @@ const Map = () => {
             />
           )}
           <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate} />
+
+          {latLongValues && (
+            <Mapbox.ShapeSource id="lineSource"  shape={{ type: 'LineString', coordinates: latLongValues }}>
+            <Mapbox.LineLayer
+              id="lineLayer"
+              style={{
+                lineColor: 'red',
+                lineWidth: 2,
+              }}
+            />
+          </Mapbox.ShapeSource>
+          )}
         </Mapbox.MapView>
         <TouchableOpacity
           style={styles.toggleButton}
@@ -136,7 +150,7 @@ const Map = () => {
         >
           <View style={styles.popup}>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-            onPress={getHistory}>
+              onPress={getHistory}>
               Update Delay
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
@@ -162,6 +176,7 @@ const Map = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   page: {
     flex: 1,
@@ -169,8 +184,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    height: 1350,
-    width: 400,
+    height: "100%",
+    width: "100%",
   },
   map: {
     flex: 1,
