@@ -1,6 +1,6 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import HomePage from '../pages/HomePage';
+import Map from '../utility/Map';
 import Settings from '../pages/Settings';
 import AccountInfo from '../pages/AccountInfo';
 import History from '../pages/History';
@@ -65,7 +65,7 @@ export default function DrawerMenu() {
       }}
       screenOptions={screenOptions}
     >
-      <Drawer.Screen name="Home" component={HomePage} />
+      <Drawer.Screen name="Home" component={Map} />
       <Drawer.Screen name="Settings" component={Settings} />
       <Drawer.Screen name="History" component={History} />
       <Drawer.Screen name="Account Info" component={AccountInfo} />

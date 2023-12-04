@@ -43,14 +43,17 @@ const History = ({ navigation }) => {
 
     const getHistoryData = async () => {
         try {
-            setHistoryData(await getHistory(startDate, endDate));
-            const values = historyData.map(entry => entry.latlong);
+            const data = await getHistory(startDate, endDate);
+            setHistoryData(data);
+            const values = data.map(entry => entry.latlong.reverse());
             setLatLongValues(values);
-            console.log(values);
+            console.log("coordinates: ", latLongValues);
         } catch (error) {
             console.error('Error while getting history: ' + error);
         }
     };
+
+
 
     return (
         <ImageBackground
@@ -146,9 +149,20 @@ const History = ({ navigation }) => {
                         <Text style={[styles.text, { color: themeColors.textColor, marginTop: 20 }]}>
                             Number of Data Points: {historyData.length}
                         </Text>
-                        {/* Add more statistics as needed */}
+                        <TouchableOpacity onPress={() => navigation.navigate('Home', { coordinates: latLongValues })}>
+                                <Text
+                                    style={[
+                                        styles.buttonTextForCloseModal,
+                                        { color: themeColors.textColor, borderColor: themeColors.textColor },
+                                    ]}
+                                >
+                                    Show on map
+                                </Text>
+                            </TouchableOpacity>
                     </View>
                 )}
+
+
             </View>
         </ImageBackground>
     );
