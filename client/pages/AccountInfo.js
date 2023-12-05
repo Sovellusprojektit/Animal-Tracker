@@ -6,6 +6,7 @@ import { getAccessToken } from '../utility/Auth';
 import axios from 'axios';
 import { IP_ADDRESS } from '@env';
 
+
 const AccountInfo = ({ navigation }) => {
     const { themeColors, backgroundImages } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
@@ -16,11 +17,19 @@ const AccountInfo = ({ navigation }) => {
                 lname: '',
                 email: '',
             });
+    
+    const [password, setPassword] = useState( {
+                oldPassword: '',
+                newPassword: '',
+            
+    });
+    
 
             useEffect(() => {
                 const getUserDetails = async () => {
                     
                   try {
+
                     const token = await getAccessToken();
                     if (token) {
                       const response = await axios.get(`http://${IP_ADDRESS}:8080/getUserInfo`, {
@@ -77,6 +86,38 @@ const AccountInfo = ({ navigation }) => {
                 }
             };
 
+            const changePassword = async () => {
+                try {
+                    const token = await getAccessToken();
+                    const response = await axios.put(
+                        `http://${IP_ADDRESS}:8080/user/password`,
+                        {
+                            oldPassword: password.oldPassword,
+                            newPassword: password.newPassword,
+                        },
+                        {
+                            headers: {
+                                'content-type': 'application/json',
+                                'Accept': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        }
+                    );
+            
+                    if (response.status === 200) {
+                        console.log('Password updated successfully');
+                        Alert.alert('Password updated successfully');
+                        setModalVisible(false);
+                    } else {
+                        console.log('Error updating password:', response.status, response.data);
+                        Alert.alert('Error updating password');
+                    }
+                } catch (error) {
+                    console.error('Error updating password:', error.message, error.response?.data);
+                    Alert.alert('Error updating password');
+                }
+            };
+            
     const handleButtonPress = () => {
         setModalVisible(true);
     };
@@ -165,6 +206,7 @@ const AccountInfo = ({ navigation }) => {
                         placeholder="Password"
                         placeholderTextColor={themeColors.textColor}
                         color={themeColors.textColor}
+                        onChangeText={(text) => setPassword({ ...password, oldPassword: text })}
                         secureTextEntry={true}
                     />
                     <TextInput
@@ -172,11 +214,12 @@ const AccountInfo = ({ navigation }) => {
                         placeholder="New password"
                         placeholderTextColor={themeColors.textColor}
                         color={themeColors.textColor}
+                        onChangeText={(text) => setPassword({ ...password, newPassword: text })}
                         secureTextEntry={true}
                     />
                     <TouchableOpacity
                         style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
-                        onPress={handleCloseModal}>
+                        onPress={changePassword}>
                         <Text
                             style={[{ color: themeColors.textColor }]}>
                             Save</Text>
