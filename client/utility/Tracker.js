@@ -1,5 +1,5 @@
 import {TRACTIVE_EMAIL, TRACTIVE_PASSWORD, TRACKER_ID } from '@env';
-import {connect, isAuthenticated, getTrackerLocation, liveOn, liveOff, getTrackerHistory} from 'tractive';
+import {connect, isAuthenticated, getTrackerLocation, liveOn, liveOff, getTrackerHistory, BuzzerOff,BuzzerOn, LEDOn, LEDOff} from 'tractive';
 
 
 export const connectTracker = async () => {
@@ -63,7 +63,48 @@ export const getHistory = async (startDate, endDate) => {
   }
 }
 
+export const buzzerOn = async () => {
+  try {
+    const buzzer = await BuzzerOn(TRACKER_ID.toString());
+    console.log("Buzzer on: ");
+    console.log(buzzer);
+    return buzzer;
+  } catch (error) {
+    console.error("Error while turning buzzer on: " + error);
+  }
+};
 
+export const buzzerOff = async () => {
+  try {
+    const buzzer = await BuzzerOff(TRACKER_ID.toString());
+    console.log("Buzzer off: ");
+    console.log(buzzer);
+    return buzzer;
+  } catch (error) {
+    console.error("Error while turning buzzer off: " + error);
+  }
+};
+
+export const ledOn = async () => {
+  try {
+    const led = await LEDOn(TRACKER_ID.toString());
+    console.log("LED on: ");
+    console.log(led);
+    return led;
+  } catch (error) {
+    console.error("Error while turning LED on: " + error);
+  }
+};
+ export const ledOff = async () => {
+  try {
+    const led = await LEDOff(TRACKER_ID.toString());
+    console.log("LED off: ");
+    console.log(led);
+    return led;
+  } catch (error) {
+    console.error("Error while turning LED off: " + error);
+  } 
+};
 
 
 

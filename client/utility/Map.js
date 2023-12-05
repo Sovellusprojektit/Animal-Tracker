@@ -4,7 +4,7 @@ import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { MAANMITTAUSLAITOS_API_KEY } from '@env';
-import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory } from './Tracker';
+import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory, buzzerOn, buzzerOff, ledOff,ledOn } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
 
@@ -17,7 +17,9 @@ const Map = ({ route }) => {
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [liveTracking, setLiveTracking] = useState(false);
-  
+  const [ringBell, setRingBell] = useState(false);
+  const [led, setLed] = useState(false);
+
   const latLongValues = route?.params?.coordinates || null;
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -25,7 +27,6 @@ const Map = ({ route }) => {
     } else {
       setMarkerVisible(true);
       try {
-
         const location = await getAnimalLocation();
         setAnimalLocation([location[1], location[0]]);
       } catch (error) {
@@ -33,6 +34,8 @@ const Map = ({ route }) => {
       }
     }
   };
+
+
 
   const togglePopup = () => {
     setPopupVisibility(!isPopupVisible);
@@ -50,6 +53,26 @@ const Map = ({ route }) => {
     }
     setLiveTracking(!liveTracking);
   };
+
+  const handleToggleRingBell = () => {
+    if (ringBell) {
+      buzzerOff();
+    }
+    else {
+      buzzerOn();
+    }
+    setRingBell(!ringBell);
+  };
+
+  const handleToggleLed = () => {
+    if (led) {
+      ledOff();
+    }
+    else {
+      ledOn();
+    }
+    setLed(!led);
+  }
 
   useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
@@ -153,11 +176,13 @@ const Map = ({ route }) => {
               onPress={getHistory}>
               Update Delay
             </Text>
-            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
-              Ring the Bell
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
+            onPress={handleToggleRingBell}>
+              {ringBell ? 'Turn off Bell' : 'Turn on Bell'}
             </Text>
-            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}>
-              Turn on the Light
+            <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
+            onPress={handleToggleLed}>
+              {led ? 'Turn off the Light' : 'Turn on the Light'}
             </Text>
             <Text
               style={[styles.buttonTextForModal, { color: themeColors.textColor, borderColor: themeColors.textColor }]}
