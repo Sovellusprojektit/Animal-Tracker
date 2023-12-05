@@ -32,7 +32,7 @@ public class UserService {
         return userRepo.findByEmail(email);
     }
 
-    public boolean updatePassword(String userEmail, UpdatePasswordRequest request) {
+public boolean updatePassword(String userEmail, UpdatePasswordRequest request) {
     Optional<User> optionalUser = userRepo.findByEmail(userEmail);
 
     if (optionalUser.isPresent()) {

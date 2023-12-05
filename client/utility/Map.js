@@ -192,6 +192,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     padding: 3,
+    width: 140,
+    textAlign: 'center',
   },
   buttonTextForCloseModal: {
     fontWeight: 'bold',
@@ -199,6 +201,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     padding: 3,
+    width: 140,
+    textAlign: 'center',
   },
   infoButton: {
     position: 'absolute',
