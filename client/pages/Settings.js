@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from 'react
 import lightBackgroundImage from '../utility/images/white_theme_bg.jpg';
 import darkBackgroundImage from '../utility/images/dark_theme_bg.jpg';
 import { useTheme } from '../utility/Theme';
+import { deleteAccessToken } from '../utility/Auth';
 
 const SettingsPage = ({ navigation }) => {
   const { isDarkMode, toggleDarkMode, themeColors } = useTheme();
@@ -11,6 +12,12 @@ const SettingsPage = ({ navigation }) => {
     return {
       backgroundColor: isDarkMode ? 'gray' : themeColors.backgroundColor,
     };
+  };
+
+  const handleLogout = async () => {
+    await deleteAccessToken(); 
+    console.log('Navigation to Login screen');
+    navigation.navigate('Login');
   };
 
   const getButtonTextStyle = () => {
@@ -58,6 +65,15 @@ const SettingsPage = ({ navigation }) => {
             Go back
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.logoutButton, getButtonStyle()]}
+        >
+          <Text style={[styles.goBackButtonText, getButtonTextStyle()]}
+            onPress={handleLogout}
+          >
+            Log Out
+          </Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -65,13 +81,12 @@ const SettingsPage = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    position: 'absolute',
-    top: 20,
+    flex: 1,
     alignSelf: 'center',
     alignItems: 'center',
   },
   darkModeToggle: {
-    marginTop: 10,
+    marginTop: 100,
     padding: 10,
     borderRadius: 8,
   },
@@ -79,7 +94,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   goBackButton: {
-    marginTop: 550,
+    marginTop: 10,
     padding: 10,
     borderRadius: 8,
   },
@@ -93,6 +108,11 @@ const styles = StyleSheet.create({
   },
   changePetNameButtonText: {
     fontSize: 16,
+  },
+  logoutButton: {
+    marginTop: 340,
+    padding: 10,
+    borderRadius: 8,
   },
 });
 
