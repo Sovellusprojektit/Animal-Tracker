@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
 import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
@@ -19,8 +19,10 @@ const Map = ({ route }) => {
   const [liveTracking, setLiveTracking] = useState(false);
   const [ringBell, setRingBell] = useState(false);
   const [led, setLed] = useState(false);
-
+  const [intervalId, setIntervalId] = useState(null);
+  
   const latLongValues = route?.params?.coordinates || null;
+
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
       setMarkerVisible(false);
@@ -45,14 +47,32 @@ const Map = ({ route }) => {
     setPopupVisibility(false);
   };
 
-  const handleToggleLiveTracking = () => {
-    if (liveTracking) {
-      liveTrackingOff();
-    } else {
+  const handleToggleLiveTracking = async () => {
+    setLiveTracking(prevLiveTracking => !prevLiveTracking); 
+    if (!liveTracking) {
       liveTrackingOn();
+    } else {
+      liveTrackingOff();
+      clearInterval(intervalId);
     }
-    setLiveTracking(!liveTracking);
   };
+
+  useEffect(() => {
+    let id;
+    if (liveTracking) {
+      id = setInterval(async () => {
+        const location = await getAnimalLocation();
+        setAnimalLocation([location[1], location[0]]);
+      }, 5000);
+    }
+    setIntervalId(id);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [liveTracking]);
+
+
 
   const handleToggleRingBell = () => {
     if (ringBell) {
@@ -147,6 +167,19 @@ const Map = ({ route }) => {
               }}
             />
           </Mapbox.ShapeSource>
+
+          )}
+
+          {liveTracking && (
+            <Mapbox.ShapeSource id="liveTracking" shape={{ type: 'Point', coordinates: animalLocation }}>
+              <Mapbox.LineLayer
+                id="liveTrackingLayer"
+                style={{
+                  lineColor: 'green',
+                  lineWidth: 2,
+                }}
+              />
+            </Mapbox.ShapeSource>
           )}
         </Mapbox.MapView>
         <TouchableOpacity

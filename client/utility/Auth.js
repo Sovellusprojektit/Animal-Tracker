@@ -4,8 +4,6 @@ import { SECRET_SIGNING_KEY, IP_ADDRESS } from '@env'
 import axios from 'axios';
 
 
-
-
 export const saveAccessToken = async (accessToken) => {
     const encryptedToken = CryptoJS.AES.encrypt(accessToken, SECRET_SIGNING_KEY).toString();
     await AsyncStorage.setItem('encryptedToken', encryptedToken);
@@ -13,9 +11,13 @@ export const saveAccessToken = async (accessToken) => {
 };
 
 
+export const deleteAccessToken = async () => {
+    await AsyncStorage.removeItem('encryptedToken');
+    console.log('Access token deleted');
+};
+
+
 export const getAccessToken = async () => {
-
-
     const encryptedToken = await AsyncStorage.getItem('encryptedToken');
 
     if (encryptedToken) {

@@ -20,7 +20,7 @@ const Navigation = () => {
           },
         }}
       />
-      <Stack.Screen
+        <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{
@@ -30,6 +30,7 @@ const Navigation = () => {
             color: 'grey',
             fontSize: 14,
           },
+          headerLeft: null, 
         }}
       />
       <Stack.Screen
