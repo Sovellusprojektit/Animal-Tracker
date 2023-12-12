@@ -1,10 +1,10 @@
-import React, { useState, useEffect} from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Modal, Dimensions } from 'react-native';
 import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { MAANMITTAUSLAITOS_API_KEY } from '@env';
-import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory, buzzerOn, buzzerOff, ledOff,ledOn } from './Tracker';
+import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory, buzzerOn, buzzerOff, ledOff, ledOn } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
 
@@ -16,12 +16,16 @@ const Map = ({ route }) => {
   const [markerVisible, setMarkerVisible] = useState(true);
   const [isPopupVisible, setPopupVisibility] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [centerCoordinate, setCenterCoordinate] = useState([0, 0]);
+  const [updateCenter, setUpdateCenter] = useState(true);
   const [liveTracking, setLiveTracking] = useState(false);
   const [ringBell, setRingBell] = useState(false);
   const [led, setLed] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
-  
-  const latLongValues = route?.params?.coordinates || null;
+  const [selectedData, setSelectedData] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(null);
+
+  const latLongValues = route?.params?.latLongValues || null;
 
   const toggleMarkerVisibility = async () => {
     if (markerVisible) {
@@ -37,8 +41,6 @@ const Map = ({ route }) => {
     }
   };
 
-
-
   const togglePopup = () => {
     setPopupVisibility(!isPopupVisible);
   };
@@ -48,7 +50,7 @@ const Map = ({ route }) => {
   };
 
   const handleToggleLiveTracking = async () => {
-    setLiveTracking(prevLiveTracking => !prevLiveTracking); 
+    setLiveTracking(prevLiveTracking => !prevLiveTracking);
     if (!liveTracking) {
       liveTrackingOn();
     } else {
@@ -71,8 +73,6 @@ const Map = ({ route }) => {
       clearInterval(id);
     };
   }, [liveTracking]);
-
-
 
   const handleToggleRingBell = () => {
     if (ringBell) {
@@ -112,6 +112,12 @@ const Map = ({ route }) => {
     setUserLocation(location);
   };
 
+  const handleCenterOnUser = () => {
+    if (userLocation) {
+      setCenterCoordinate([userLocation.coords.longitude, userLocation.coords.latitude]);
+    }
+  };
+
   useEffect(() => {
     const initializeMap = async () => {
       const isConnected = await connectTracker();
@@ -125,21 +131,70 @@ const Map = ({ route }) => {
         }
       }
     };
-
     initializeMap();
   }, []);
 
+  useEffect(() => {
+    if (updateCenter && userLocation) {
+      setCenterCoordinate([userLocation.coords.longitude, userLocation.coords.latitude]);
+      setUpdateCenter(false);
+      handleCenterOnUser();
+    }
+  }, [userLocation, updateCenter]);
+
+  const handleMarkerClick = (time, speed, index) => {
+    setSelectedData({ time, speed });
+    setCurrentIndex(index);
+  };
+
+  const handlePreviousDataPoint = () => {
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      handleMarkerClick(latLongValues.time[newIndex], latLongValues.speed[newIndex], newIndex);
+    }
+  };
+
+  const handleNextDataPoint = () => {
+    if (currentIndex < latLongValues.latLong.length - 1) {
+      const newIndex = currentIndex + 1;
+      handleMarkerClick(latLongValues.time[newIndex], latLongValues.speed[newIndex], newIndex);
+    }
+  };
+
+  const handleCloseCard = () => {
+    setSelectedData(null);
+    setCurrentIndex(null);
+  };
+
   return (
     <View style={styles.page}>
+      {selectedData && (
+        <View style={[styles.card, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+          <TouchableOpacity onPress={handlePreviousDataPoint}>
+            <Text style={{ color: 'white', fontSize: 30 }}>←</Text>
+          </TouchableOpacity>
+          <View>
+            <Text style={{ color: 'white', textAlign: 'center' }}>Time: {selectedData.time}</Text>
+            <Text style={{ color: 'white', textAlign: 'center' }}>Speed: {selectedData.speed}</Text>
+          </View>
+          <TouchableOpacity onPress={handleNextDataPoint}>
+            <Text style={{ color: 'white', fontSize: 30 }}>→</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleCloseCard}>
+            <Text style={{ color: 'white', fontSize: 20 }}>X</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.container}>
         <Mapbox.MapView
           style={styles.map}
-          styleURL={`https://avoin-karttakuva.maanmittauslaitos.fi/vectortiles/stylejson/v20/generic.json?api-key=${MAANMITTAUSLAITOS_API_KEY}`}
-          centerCoordinate={[25.527834, 65.003387]}
+          styleURL={`https://avoin-karttakuva.maanmittauslaitos.fi/vectortiles/stylejson/v20/taustakartta.json?TileMatrixSet=WGS84_Pseudo-Mercator&api-key=${MAANMITTAUSLAITOS_API_KEY}`}
+          centerCoordinate={centerCoordinate}
           zoomLevel={6}
           showUserLocation={true}
           logoEnabled={false}
         >
+
           {markerVisible && (
             <Mapbox.PointAnnotation
               id="marker"
@@ -149,7 +204,7 @@ const Map = ({ route }) => {
           )}
           {userLocation && (
             <Mapbox.Camera
-              centerCoordinate={[userLocation.coords.longitude, userLocation.coords.latitude]}
+              centerCoordinate={centerCoordinate}
               zoomLevel={15}
               animationMode={'flyTo'}
               animationDuration={0}
@@ -158,29 +213,30 @@ const Map = ({ route }) => {
           <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate} />
 
           {latLongValues && (
-            <Mapbox.ShapeSource id="lineSource"  shape={{ type: 'LineString', coordinates: latLongValues }}>
-            <Mapbox.LineLayer
-              id="lineLayer"
-              style={{
-                lineColor: 'red',
-                lineWidth: 2,
-              }}
-            />
-          </Mapbox.ShapeSource>
-
-          )}
-
-          {liveTracking && (
-            <Mapbox.ShapeSource id="liveTracking" shape={{ type: 'Point', coordinates: animalLocation }}>
+            <Mapbox.ShapeSource id="lineSource" shape={{ type: 'LineString', coordinates: latLongValues.latLong }}>
               <Mapbox.LineLayer
-                id="liveTrackingLayer"
+                id="lineLayer"
                 style={{
-                  lineColor: 'green',
+                  lineColor: 'red',
                   lineWidth: 2,
                 }}
               />
             </Mapbox.ShapeSource>
+
           )}
+
+          {latLongValues && latLongValues.latLong && latLongValues.latLong.map((coordinate, index) => (
+            <Mapbox.PointAnnotation
+              key={index}
+              id={String(index)}
+              coordinate={coordinate}
+              onSelected={() => handleMarkerClick(latLongValues.time[index], latLongValues.speed[index], index)}
+            >
+              <View style={currentIndex === index ? styles.selectedPoint : styles.point} />
+            </Mapbox.PointAnnotation>
+          ))}
+
+
         </Mapbox.MapView>
         <TouchableOpacity
           style={styles.toggleButton}
@@ -198,6 +254,14 @@ const Map = ({ route }) => {
             Info
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.centerOnUserButton}
+          onPress={handleCenterOnUser}
+        >
+          <Text style={[styles.buttonTextForMarker, { color: themeColors.textColor }]}>
+            Center on User
+          </Text>
+        </TouchableOpacity>
         <Modal
           animationType="slide"
           transparent={true}
@@ -210,11 +274,11 @@ const Map = ({ route }) => {
               Update Delay
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-            onPress={handleToggleRingBell}>
+              onPress={handleToggleRingBell}>
               {ringBell ? 'Turn off Bell' : 'Turn on Bell'}
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-            onPress={handleToggleLed}>
+              onPress={handleToggleLed}>
               {led ? 'Turn off the Light' : 'Turn on the Light'}
             </Text>
             <Text
@@ -240,6 +304,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  card: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: Dimensions.get('window').height * 0.10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 10,
+    zIndex: 1,
+    justifyContent: 'center',
+    textAlignVertical: 'center',
+  },
+  point: {
+    height: 10,
+    width: 10,
+    backgroundColor: 'red',
+    borderRadius: 5,
+  },
+  selectedPoint: {
+    height: 12.5,
+    width: 12.5,
+    backgroundColor: 'green',
+    borderRadius: 7.5,
+    zIndex: 1,
+  },
+  centerOnUserButton: {
+    position: 'absolute',
+    bottom: 60,
+    right: 16,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#858585',
   },
   container: {
     height: "100%",

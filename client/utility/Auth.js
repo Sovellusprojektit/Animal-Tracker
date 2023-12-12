@@ -32,6 +32,8 @@ export const getAccessToken = async () => {
 
 export const handleLogin = async (email, password) => {
     try {
+        const apiUrl = `http://${IP_ADDRESS}:8080/auth/login`;
+        console.log('API URL:', apiUrl);
         const response = await axios.post(`http://${IP_ADDRESS}:8080/auth/login`, {
             email: email,
             password: password,
@@ -44,11 +46,11 @@ export const handleLogin = async (email, password) => {
             return true;
 
 
-        }else if(response.status === 403){
+        } else if (response.status === 403) {
             console.log('Forbidden: Check your email and password ', response.status);
             return false;
-        } 
-        
+        }
+
         else {
             console.error('Login failed: ', response.status);
         }
