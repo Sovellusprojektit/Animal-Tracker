@@ -18,7 +18,6 @@ const History = ({ navigation }) => {
     const [endDate, setEndDate] = useState(new Date());
     const [historyData, setHistoryData] = useState(null);
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-    const [showEndDatePicker, setShowEndDatePicker] = useState(false);
     const [latLongValues, setLatLongValues] = useState([]);
     const { themeColors, backgroundImages } = useTheme();
 
@@ -31,28 +30,30 @@ const History = ({ navigation }) => {
         setShowStartDatePicker(false);
         if (selectedDate) {
             setStartDate(selectedDate);
+
+            let newEndDate = new Date(selectedDate);
+            newEndDate.setDate(selectedDate.getDate() + 1);
+
+            setEndDate(newEndDate);
         }
     };
 
-    const handleEndDateChange = (event, selectedDate) => {
-        setShowEndDatePicker(false);
-        if (selectedDate) {
-            setEndDate(selectedDate);
-        }
-    };
 
     const getHistoryData = async () => {
         try {
             const data = await getHistory(startDate, endDate);
             setHistoryData(data);
-            const values = data.map(entry => entry.latlong.reverse());
+            const values = {
+                latLong: data.map(entry => entry.latlong.reverse()),
+                time: data.map(entry => new Date(entry.time * 1000).toLocaleTimeString('en-US', { hour12: false })),
+                speed: data.map(entry => entry.speed),
+            };
             setLatLongValues(values);
             console.log("coordinates: ", latLongValues);
         } catch (error) {
             console.error('Error while getting history: ' + error);
         }
     };
-
 
 
     return (
@@ -63,27 +64,19 @@ const History = ({ navigation }) => {
             <View style={styles.container}>
                 <View style={styles.upperHalf}>
                     <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Start Date:</Text>
+                        <Text style={styles.cardTitle}>Select Date</Text>
                         <TextInput
                             style={[styles.text, styles.input]}
-                            placeholder="Select Start Date"
-                            value={startDate.toLocaleDateString()}
+                            placeholder="Select Date"
+                            value={startDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                             onFocus={() => setShowStartDatePicker(true)}
-                        />
-
-                        <Text style={styles.cardTitle}>End Date:</Text>
-                        <TextInput
-                            style={[styles.text, styles.input]}
-                            placeholder="Select End Date"
-                            value={endDate.toLocaleDateString()}
-                            onFocus={() => setShowEndDatePicker(true)}
                         />
 
                         <TouchableOpacity onPress={getHistoryData}>
                             <Text
                                 style={[
                                     styles.buttonTextForModal,
-                                    { color: themeColors.textColor, borderColor: themeColors.textColor },
+                                    { color: themeColors.textColor, borderColor: themeColors.textColor, textAlign: 'center' },
                                 ]}
                             >
                                 Get History Data
@@ -102,17 +95,11 @@ const History = ({ navigation }) => {
                         <>
                             <TextInput
                                 style={[styles.text, styles.input]}
-                                placeholder="Select Start Date"
-                                value={startDate.toLocaleDateString()}
+                                placeholder="Select Date"
+                                value={startDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                 onFocus={() => setShowStartDatePicker(true)}
                             />
-                            <TextInput
-                                style={[styles.text, styles.input]}
-                                placeholder="Select End Date"
-                                value={endDate.toLocaleDateString()}
-                                onFocus={() => setShowEndDatePicker(true)}
-                            />
-                         
+
                             <TouchableOpacity onPress={handleCloseModal}>
                                 <Text
                                     style={[
@@ -133,14 +120,7 @@ const History = ({ navigation }) => {
                         mode="date"
                         display="default"
                         onChange={handleStartDateChange}
-                    />
-                )}
-                {showEndDatePicker && (
-                    <DateTimePicker
-                        value={endDate}
-                        mode="date"
-                        display="default"
-                        onChange={handleEndDateChange}
+                        style={{ color: themeColors.textColor }}
                     />
                 )}
 
@@ -149,20 +129,19 @@ const History = ({ navigation }) => {
                         <Text style={[styles.text, { color: themeColors.textColor, marginTop: 20 }]}>
                             Number of Data Points: {historyData.length}
                         </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('Home', { coordinates: latLongValues })}>
-                                <Text
-                                    style={[
-                                        styles.buttonTextForCloseModal,
-                                        { color: themeColors.textColor, borderColor: themeColors.textColor },
-                                    ]}
-                                >
-                                    Show on map
-                                </Text>
-                            </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Home', { latLongValues })}>
+                            <Text
+                                style={[
+                                    styles.buttonTextForCloseModal,
+                                    { color: themeColors.textColor, borderColor: themeColors.textColor },
+                                ]}
+                            >
+                                Show on map
+                            </Text>
+                        </TouchableOpacity>
+
                     </View>
                 )}
-
-
             </View>
         </ImageBackground>
     );
@@ -190,7 +169,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#FFFFFF',
         marginBottom: 10,
-    },    
+    },
     statsContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -226,10 +205,11 @@ const styles = StyleSheet.create({
     buttonTextForModal: {
         fontWeight: 'bold',
         top: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         borderWidth: 1,
         padding: 3,
         marginTop: 20,
+        justifyContent: 'center',
     },
 });
 

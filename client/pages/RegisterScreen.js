@@ -28,12 +28,14 @@ const RegisterScreen = ({ navigation }) => {
           email: email,
           role: role,
         };
+        const apiUrl = `http://${IP_ADDRESS}:8080/auth/signUp`;
+        console.log('API URL:', apiUrl);
         const response = await axios.post(`http://${IP_ADDRESS}:8080/auth/signUp`, data, {
           headers: {
             'content-type': 'application/json', // Varmista, että lähetät JSON-dataa
           },
         });
-  
+
         if (response.status === 200) {
           console.log('Response:', response.data);
           Alert.alert('User registered');
@@ -51,41 +53,41 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <ImageBackground source={backgroundImages.backgroundImage} style={styles.container}>
-    <View style={[styles.container, {color: themeColors.textColor}]} >
-      <TextInput
-        style={[styles.textInput, { borderColor: themeColors.textColor }]}
-        placeholder="First name"
-        onChangeText={(text) => setFname(text)}
-        placeholderTextColor={themeColors.textColor}
-        color={themeColors.textColor}
+      <View style={[styles.container, { color: themeColors.textColor }]} >
+        <TextInput
+          style={[styles.textInput, { borderColor: themeColors.textColor }]}
+          placeholder="First name"
+          onChangeText={(text) => setFname(text)}
+          placeholderTextColor={themeColors.textColor}
+          color={themeColors.textColor}
 
-      ></TextInput>
-      <TextInput
-        style={[styles.textInput, { borderColor: themeColors.textColor }]}
-        placeholder="Last name"
-        onChangeText={(text) => setLname(text)}
-        placeholderTextColor={themeColors.textColor}
-        color={themeColors.textColor}
+        ></TextInput>
+        <TextInput
+          style={[styles.textInput, { borderColor: themeColors.textColor }]}
+          placeholder="Last name"
+          onChangeText={(text) => setLname(text)}
+          placeholderTextColor={themeColors.textColor}
+          color={themeColors.textColor}
 
-      ></TextInput>
-      <TextInput
-        style={[styles.textInput, { borderColor: themeColors.textColor }]}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        placeholderTextColor={themeColors.textColor}
-        color={themeColors.textColor}
-      ></TextInput>
-      <TextInput
-        style={[styles.textInput, { borderColor: themeColors.textColor }]}
-        secureTextEntry={true}
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
-        placeholderTextColor={themeColors.textColor}
-        color={themeColors.textColor}
+        ></TextInput>
+        <TextInput
+          style={[styles.textInput, { borderColor: themeColors.textColor }]}
+          placeholder="Email"
+          onChangeText={(text) => setEmail(text)}
+          placeholderTextColor={themeColors.textColor}
+          color={themeColors.textColor}
+        ></TextInput>
+        <TextInput
+          style={[styles.textInput, { borderColor: themeColors.textColor }]}
+          secureTextEntry={true}
+          placeholder="Password"
+          onChangeText={(text) => setPassword(text)}
+          placeholderTextColor={themeColors.textColor}
+          color={themeColors.textColor}
 
-      ></TextInput>
-      <View style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}>
-      <TouchableOpacity
+        ></TextInput>
+        <View style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}>
+          <TouchableOpacity
             style={[styles.buttonstyle, { backgroundColor: themeColors.backgroundColor }]}
             onPress={handleRegister}
           >
@@ -93,8 +95,8 @@ const RegisterScreen = ({ navigation }) => {
               Register
             </Text>
           </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </ImageBackground>
   );
 };
