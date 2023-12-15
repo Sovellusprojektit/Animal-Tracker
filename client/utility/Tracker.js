@@ -1,5 +1,5 @@
-import {TRACTIVE_EMAIL, TRACTIVE_PASSWORD, TRACKER_ID } from '@env';
-import {connect, isAuthenticated, getTrackerLocation, liveOn, liveOff, getTrackerHistory, BuzzerOff,BuzzerOn, LEDOn, LEDOff} from 'tractive';
+import {TRACTIVE_EMAIL, TRACTIVE_PASSWORD, TRACKER_ID, PET_ID } from '@env';
+import {connect, isAuthenticated, getTrackerLocation, liveOn, liveOff, getTrackerHistory, BuzzerOff,BuzzerOn, LEDOn, LEDOff, getPets, getPet } from 'tractive';
 
 
 export const connectTracker = async () => {
@@ -106,5 +106,21 @@ export const ledOn = async () => {
   } 
 };
 
+export const getPetData = async () => {
+  try {
+    const pets = await getPets();
+    console.log("Pet Data:", pets);
+    return pets;
+  } catch (error) {
+    console.error("Error while getting pet data: " + error);
+  }
+};
 
-
+export const getPetDetails = async () => {
+  try {
+    const pet = await getPet(PET_ID.toString());
+    return pet;
+  } catch (error) {
+    console.error("Error while getting pet details: " + error);
+  }
+};
