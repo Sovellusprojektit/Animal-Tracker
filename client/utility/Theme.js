@@ -12,13 +12,11 @@ export const ThemeProvider = ({ children }) => {
   const lightModeColors = {
     backgroundColor: 'white',
     textColor: 'black',
-    // Add more color options as needed
   };
 
   const darkModeColors = {
     backgroundColor: 'gray',
     textColor: 'white',
-    // Add more color options as needed
   };
 
   const themeColors = isDarkMode ? darkModeColors : lightModeColors;

@@ -4,7 +4,7 @@ import { useTheme } from '../utility/Theme';
 import Mapbox from '@rnmapbox/maps';
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { MAANMITTAUSLAITOS_API_KEY } from '@env';
-import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory, buzzerOn, buzzerOff, ledOff,ledOn } from './Tracker';
+import { connectTracker, getAnimalLocation, liveTrackingOff, liveTrackingOn, getHistory, buzzerOn, buzzerOff, ledOff, ledOn, getPetData, getPetDetails } from './Tracker';
 import { UserLocation } from '@rnmapbox/maps';
 import { request, PERMISSIONS } from 'react-native-permissions';
 
@@ -19,13 +19,19 @@ const Map = ({ route }) => {
   const [liveTracking, setLiveTracking] = useState(false);
   const [ringBell, setRingBell] = useState(false);
   const [led, setLed] = useState(false);
+  const [petName, setPetName] = useState(null);
+  const [deviceID, setDeviceID] = useState(null);
+  const [petNameVisible, setPetNameVisible] = useState(true);
 
   const latLongValues = route?.params?.coordinates || null;
+
   const toggleMarkerVisibility = async () => {
-    if (markerVisible) {
+    if (markerVisible && petNameVisible) {
       setMarkerVisible(false);
+      setPetNameVisible(false);
     } else {
       setMarkerVisible(true);
+      setPetNameVisible(true);
       try {
         const location = await getAnimalLocation();
         setAnimalLocation([location[1], location[0]]);
@@ -35,6 +41,38 @@ const Map = ({ route }) => {
     }
   };
 
+  const getPetName = async () => {
+    try {
+      const petDetails = await getPetDetails();
+      const petName = petDetails.details.name;
+      setPetName(petName);
+      console.log("Pet name: ", petName);
+    } catch (error) {
+      console.error("Error while getting pet details: ", error);
+    }
+  };
+
+  const getDeviceID = async () => {
+    try {
+      const deviceDATA = await getPetDetails();
+      const deviceID = deviceDATA.device._id;
+      console.log("Device ID: ", deviceID);
+      setDeviceID(deviceID);
+    } catch (error) {
+      console.error("Error while getting device ID: ", error);
+    }
+  };
+
+  const handleMapIdle = async () => {
+    if (liveTracking) {
+      try {
+        const location = await getAnimalLocation();
+        setAnimalLocation([location[1], location[0]]);
+      } catch (error) {
+        console.error("Error while getting location: " + error);
+      }
+    }
+  };
 
 
   const togglePopup = () => {
@@ -86,13 +124,7 @@ const Map = ({ route }) => {
       .catch((error) => {
         console.error('Error requesting location permission:', error);
       });
-  }, []);
 
-  const handleLocationUpdate = (location) => {
-    setUserLocation(location);
-  };
-
-  useEffect(() => {
     const initializeMap = async () => {
       const isConnected = await connectTracker();
 
@@ -100,6 +132,8 @@ const Map = ({ route }) => {
         try {
           const location = await getAnimalLocation();
           setAnimalLocation([location[1], location[0]]);
+          getPetName();
+          getDeviceID();
         } catch (error) {
           console.error("Error while getting location: " + error);
         }
@@ -107,7 +141,24 @@ const Map = ({ route }) => {
     };
 
     initializeMap();
-  }, []);
+
+    if (liveTracking) {
+      liveTrackingOn();
+      handleMapIdle();
+    }
+
+    return () => {
+      liveTrackingOff();
+    };
+  }, [liveTracking]);
+
+
+  const handleLocationUpdate = (location) => {
+    if (liveTracking) {
+      setAnimalLocation([location.coords.longitude, location.coords.latitude]);
+    }
+    setUserLocation(location);
+  };
 
   return (
     <View style={styles.page}>
@@ -119,13 +170,24 @@ const Map = ({ route }) => {
           zoomLevel={6}
           showUserLocation={true}
           logoEnabled={false}
+          onMapIdle={handleMapIdle}
         >
           {markerVisible && (
             <Mapbox.PointAnnotation
               id="marker"
               coordinate={animalLocation}
-              title="Test"
-            />
+              title="Map"
+            >
+            </Mapbox.PointAnnotation>
+          )}
+          {petNameVisible && (
+            <Mapbox.PointAnnotation
+              id="petNameText"
+              coordinate={animalLocation}
+              title="PetName"
+            >
+              <Text style={{ fontWeight: 'bold', color: 'red' }}>{petName}</Text>
+            </Mapbox.PointAnnotation>
           )}
           {userLocation && (
             <Mapbox.Camera
@@ -138,15 +200,15 @@ const Map = ({ route }) => {
           <UserLocation animated={true} visible={true} onUpdate={handleLocationUpdate} />
 
           {latLongValues && (
-            <Mapbox.ShapeSource id="lineSource"  shape={{ type: 'LineString', coordinates: latLongValues }}>
-            <Mapbox.LineLayer
-              id="lineLayer"
-              style={{
-                lineColor: 'red',
-                lineWidth: 2,
-              }}
-            />
-          </Mapbox.ShapeSource>
+            <Mapbox.ShapeSource id="lineSource" shape={{ type: 'LineString', coordinates: latLongValues }}>
+              <Mapbox.LineLayer
+                id="lineLayer"
+                style={{
+                  lineColor: 'red',
+                  lineWidth: 2,
+                }}
+              />
+            </Mapbox.ShapeSource>
           )}
         </Mapbox.MapView>
         <TouchableOpacity
@@ -173,15 +235,16 @@ const Map = ({ route }) => {
         >
           <View style={styles.popup}>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-              onPress={getHistory}>
+            //onPress={}
+            >
               Update Delay
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-            onPress={handleToggleRingBell}>
+              onPress={handleToggleRingBell}>
               {ringBell ? 'Turn off Bell' : 'Turn on Bell'}
             </Text>
             <Text style={[styles.buttonTextForModal, { color: themeColors.textColor, marginBottom: 10, borderColor: themeColors.textColor }]}
-            onPress={handleToggleLed}>
+              onPress={handleToggleLed}>
               {led ? 'Turn off the Light' : 'Turn on the Light'}
             </Text>
             <Text
@@ -258,8 +321,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 150,
     height: 200,
-    marginTop: 548,
+    marginTop: 525,
     backgroundColor: '#858585',
+  },
+  calloutStyle: {
+    minHeight: 50,
   },
 });
 
