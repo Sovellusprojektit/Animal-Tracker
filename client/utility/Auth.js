@@ -4,8 +4,6 @@ import { SECRET_SIGNING_KEY, IP_ADDRESS } from '@env'
 import axios from 'axios';
 
 
-
-
 export const saveAccessToken = async (accessToken) => {
     const encryptedToken = CryptoJS.AES.encrypt(accessToken, SECRET_SIGNING_KEY).toString();
     await AsyncStorage.setItem('encryptedToken', encryptedToken);
@@ -13,9 +11,13 @@ export const saveAccessToken = async (accessToken) => {
 };
 
 
+export const deleteAccessToken = async () => {
+    await AsyncStorage.removeItem('encryptedToken');
+    console.log('Access token deleted');
+};
+
+
 export const getAccessToken = async () => {
-
-
     const encryptedToken = await AsyncStorage.getItem('encryptedToken');
 
     if (encryptedToken) {
@@ -30,6 +32,8 @@ export const getAccessToken = async () => {
 
 export const handleLogin = async (email, password) => {
     try {
+        const apiUrl = `http://${IP_ADDRESS}:8080/auth/login`;
+        console.log('API URL:', apiUrl);
         const response = await axios.post(`http://${IP_ADDRESS}:8080/auth/login`, {
             email: email,
             password: password,
@@ -42,11 +46,11 @@ export const handleLogin = async (email, password) => {
             return true;
 
 
-        }else if(response.status === 403){
+        } else if (response.status === 403) {
             console.log('Forbidden: Check your email and password ', response.status);
             return false;
-        } 
-        
+        }
+
         else {
             console.error('Login failed: ', response.status);
         }

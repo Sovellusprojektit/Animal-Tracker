@@ -23,11 +23,6 @@ const CustomDrawerContent = ({ navigation }) => {
         labelStyle={{ color: themeColors.textColor }}
       />
       <DrawerItem
-        label="Settings"
-        onPress={() => navigation.navigate('Settings')}
-        labelStyle={{ color: themeColors.textColor }}
-      />
-      <DrawerItem
         label="History"
         onPress={() => navigation.navigate('History')}
         labelStyle={{ color: themeColors.textColor }}
@@ -35,6 +30,11 @@ const CustomDrawerContent = ({ navigation }) => {
       <DrawerItem
         label="Account Info"
         onPress={() => navigation.navigate('Account Info')}
+        labelStyle={{ color: themeColors.textColor }}
+      />
+       <DrawerItem
+        label="Settings"
+        onPress={() => navigation.navigate('Settings')}
         labelStyle={{ color: themeColors.textColor }}
       />
     </DrawerContentScrollView>
@@ -66,9 +66,9 @@ export default function DrawerMenu() {
       screenOptions={screenOptions}
     >
       <Drawer.Screen name="Home" component={Map} />
-      <Drawer.Screen name="Settings" component={Settings} />
       <Drawer.Screen name="History" component={History} />
       <Drawer.Screen name="Account Info" component={AccountInfo} />
+      <Drawer.Screen name="Settings" component={Settings} />
     </Drawer.Navigator>
   );
 }
