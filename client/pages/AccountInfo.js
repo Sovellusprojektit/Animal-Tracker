@@ -32,7 +32,9 @@ const AccountInfo = ({ navigation }) => {
 
                     const token = await getAccessToken();
                     if (token) {
-                      const response = await axios.get(`http://${IP_ADDRESS}:8080/getUserInfo`, {
+                    const apiUrl = `http://${IP_ADDRESS}:8080/getUserInfo`;
+                    console.log('API URL:', apiUrl);
+                    const response = await axios.get(`http://${IP_ADDRESS}:8080/getUserInfo`, {
                         headers: {
                           'content-type': 'application/json',
                           'Accept': 'application/json',
@@ -75,6 +77,7 @@ const AccountInfo = ({ navigation }) => {
             
                     if (response.status === 200) {
                         console.log('Response:', response.data);
+                        Alert.alert('User details updated successfully');
                         handleCloseUpdateValuesModal();
                     } else {
                         Alert.alert('Error updating user details');

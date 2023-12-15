@@ -236,6 +236,18 @@ const Map = ({ route }) => {
             </Mapbox.PointAnnotation>
           ))}
 
+{liveTracking && (
+  <Mapbox.ShapeSource id="liveTracking" shape={{ type: 'Point', coordinates: animalLocation }}>
+    <Mapbox.LineLayer
+      id="liveTrackingLayer"
+      style={{
+        lineColor: 'green',
+        lineWidth: 2,
+      }}
+    />
+  </Mapbox.ShapeSource>
+)}
+
 
         </Mapbox.MapView>
         <TouchableOpacity

@@ -4,6 +4,7 @@ import lightBackgroundImage from '../utility/images/white_theme_bg.jpg';
 import darkBackgroundImage from '../utility/images/dark_theme_bg.jpg';
 import { useTheme } from '../utility/Theme';
 import { deleteAccessToken } from '../utility/Auth';
+import { CommonActions } from '@react-navigation/native';
 
 const SettingsPage = ({ navigation }) => {
   const { isDarkMode, toggleDarkMode, themeColors } = useTheme();
@@ -17,7 +18,12 @@ const SettingsPage = ({ navigation }) => {
   const handleLogout = async () => {
     await deleteAccessToken(); 
     console.log('Navigation to Login screen');
-    navigation.navigate('Login');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
+    );
   };
 
   const getButtonTextStyle = () => {
@@ -45,15 +51,6 @@ const SettingsPage = ({ navigation }) => {
         >
           <Text style={[styles.darkModeToggleText, getButtonTextStyle()]}>
             {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.ChangePetToggle, getButtonStyle()]}
-        >
-          <Text style={[styles.changePetNameButtonText, getButtonTextStyle()]}
-            //onPress={() => 
-          >
-            Change pet name
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
