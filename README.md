@@ -20,9 +20,15 @@
 
 
 ## About The Project
-![wtw_at_lp](https://github.com/***/***/assets/***/)
-![wtw_at_es]()
-![wtw_at_aip]()
+
+![1](https://github.com/Sovellusprojektit/Animal-Tracker/assets/99178278/e1fa7774-bd35-4f43-b7ae-37343155f067)
+
+![2](https://github.com/Sovellusprojektit/Animal-Tracker/assets/99178278/789c88ca-c3dc-4f64-8a31-07864f274ee0)
+
+![3](https://github.com/Sovellusprojektit/Animal-Tracker/assets/99178278/0fd75caa-282e-485f-8cdd-1435c4cafc00)
+
+![4](https://github.com/Sovellusprojektit/Animal-Tracker/assets/99178278/79413615-5f7f-40ef-bcdb-79589eb2b64d)
+
 
 
 
